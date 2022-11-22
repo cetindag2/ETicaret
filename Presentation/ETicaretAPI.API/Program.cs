@@ -6,16 +6,12 @@ using ETicaretAPI.Infrastructure.Filters;
 using ETicaretAPI.Infrastructure.Services.Storage.Local;
 using ETicaretAPI.Persistence;
 using ETicaretAPI.SignalR;
-using ETicaretAPI.SignalR.Hubs;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
-using Serilog.Context;
 using Serilog.Core;
-using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,24 +19,21 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddPersistenceServices();
 builder.Services.AddInfrastructureServices();
 
-builder.Services.AddApplicationServices();  
+builder.Services.AddApplicationServices();
 
 builder.Services.AddStorage<LocalStorage>();
 builder.Services.AddSignalRServices();
 
 builder.Services.AddCors(option => option.AddDefaultPolicy(policy =>
 policy.WithOrigins("http://localhost:4200", "https://localhost:4200").AllowAnyHeader().AllowAnyMethod().AllowCredentials()
-)) ;
-
+));
+// Add services to the container.
 
 Logger log = new LoggerConfiguration()
     .WriteTo.Console()
     .WriteTo.File("logs/log.txt")
     .WriteTo.MSSqlServer(builder.Configuration.GetConnectionString("MSSQL"), "logs",
         autoCreateSqlTable: true)
-        //.WriteTo.Seq(builder.Configuration["Seq:ServerURL"])
-    //.Enrich.FromLogContext()
-    //.MinimumLevel.Information()
     .CreateLogger();
 
 builder.Host.UseSerilog(log);
@@ -54,11 +47,11 @@ builder.Services.AddHttpLogging(logging =>
     logging.ResponseBodyLogLimit = 4096;
 });
 
-builder.Services.AddControllers(options=> options.Filters.Add<ValidationFilter>())
+builder.Services.AddControllers(options => options.Filters.Add<ValidationFilter>())
     .AddFluentValidation(configuration => configuration.RegisterValidatorsFromAssemblyContaining<CreateProductValidator>
     ())
-    .ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true) ;
-
+    .ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true);
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -76,13 +69,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = builder.Configuration["Token:Audience"],
             ValidIssuer = builder.Configuration["Token:Issuer"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Token:SecurityKey"])),
-            LifetimeValidator = (notBefore, expires, securityToken, validationParameters) => expires != null ? expires > DateTime.UtcNow : false
-
+            LifetimeValidator = (notBefore, expires, securityToken, validationParameters) => expires != null ? expires > DateTime.UtcNow : false,
         };
     });
 
 
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -90,11 +83,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 app.ConfigureExceptionHandler<Program>(app.Services.GetRequiredService<ILogger<Program>>());
+
 app.UseStaticFiles();
 
 //app.UseSerilogRequestLogging();
+
 app.UseHttpLogging();
 
 app.UseCors();

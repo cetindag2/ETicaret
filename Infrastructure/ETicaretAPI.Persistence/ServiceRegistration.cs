@@ -1,4 +1,6 @@
+
 ﻿using ETicaretAPI.Persistence.Contexts;
+using ETicaretAPI.Persistence.Contexts;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -45,10 +47,12 @@ namespace ETicaretAPI.Persistence
             services.AddScoped<IInvoiceFileWriteRepository, InvoiceFileWriteRepository>();
             services.AddScoped<IInvoiceFileReadRepository, InvoiceFileReadRepository>();
 
+
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IExternalAuthentication, AuthService>();
             services.AddScoped<IInternalAuthentication, AuthService>();
+
         }
     }
 }

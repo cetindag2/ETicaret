@@ -148,6 +148,7 @@ namespace ETicaretAPI.Persistence.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+
                     b.Property<string>("RefreshToken")
                         .HasColumnType("nvarchar(max)");
 

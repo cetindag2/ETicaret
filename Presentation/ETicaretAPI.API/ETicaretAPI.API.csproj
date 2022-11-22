@@ -29,8 +29,7 @@
     <ProjectReference Include="..\..\Infrastructure\ETicaretAPI.SignalR\ETicaretAPI.SignalR.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot\resource\product-images\" />
-  </ItemGroup>
-
+	<ItemGroup>
+		<Folder Include="wwwroot\resource\product-images\NewFolder\" />
+	</ItemGroup>
 </Project>
