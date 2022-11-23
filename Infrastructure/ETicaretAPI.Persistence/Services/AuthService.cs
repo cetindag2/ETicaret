@@ -40,16 +40,16 @@ namespace ETicaretAPI.Persistence.Services
             _userService = userService;
         }
         
-        public async Task<Token> LoginAsync(string usernameOrEmail, string password, int accessTokenLifeTime)
+        public async Task<Token> LoginAsync(string UserNameOrEmail, string Password, int accessTokenLifeTime)
         {
-            Domain.Entities.Identity.AppUser user = await _userManager.FindByNameAsync(usernameOrEmail);
+            Domain.Entities.Identity.AppUser user = await _userManager.FindByNameAsync(UserNameOrEmail);
             if (user == null)
-                user = await _userManager.FindByEmailAsync(usernameOrEmail);
+                user = await _userManager.FindByEmailAsync(UserNameOrEmail);
 
             if (user == null)
                 throw new NotFoundUserException();
 
-            SignInResult result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
+            SignInResult result = await _signInManager.CheckPasswordSignInAsync(user, Password, false);
             if (result.Succeeded) //Authentication başarılı!
             {
                 Token token = _tokenHandler.CreateAccessToken(accessTokenLifeTime);

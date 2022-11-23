@@ -1,7 +1,6 @@
 ﻿using ETicaretAPI.Application.Features.Commands.AppUser.LoginUser;
 using ETicaretAPI.Application.Features.Commands.AppUser.RefreshLoginToken;
 using MediatR;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ETicaretAPI.API.Controllers
@@ -21,14 +20,11 @@ namespace ETicaretAPI.API.Controllers
             LoginUserCommandResponse response = await _mediator.Send(loginUserCommandRequest);
             return Ok(response);
         }
-
         [HttpPost("[action]")]
         public async Task<IActionResult> RefreshTokenLogin([FromBody] RefreshTokenLoginCommandRequest refreshTokenLoginCommandRequest)
         {
             RefreshTokenLoginCommandResponse response = await _mediator.Send(refreshTokenLoginCommandRequest);
             return Ok(response);
         }
-
-
     }
 }
