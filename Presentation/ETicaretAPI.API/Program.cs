@@ -9,12 +9,17 @@ using ETicaretAPI.SignalR;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpLogging;
+using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using Serilog.Context;
 using Serilog.Core;
+using System.Security.Claims;
 using System.Text;
 
+
 var builder = WebApplication.CreateBuilder(args);
+
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddPersistenceServices();
@@ -62,18 +67,26 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     {
         options.TokenValidationParameters = new()
         {
-            ValidateAudience = false, //Tokeni dogrulayan yer -> www.myclient.com
-            ValidateIssuer = false, //Tokenin dogrulandigi yer. -> www.myapi.com
-            ValidateLifetime = false, //token  suresini kontrol edecek olan parametre
+            ValidateAudience = true, //Tokeni dogrulayan yer -> www.myclient.com
+            ValidateIssuer = true, //Tokenin dogrulandigi yer. -> www.myapi.com
+            ValidateLifetime = true, //token  suresini kontrol edecek olan parametre
             ValidateIssuerSigningKey = true, //Guvenlik anahtari
 
             ValidAudience = builder.Configuration["Token:Audience"],
             ValidIssuer = builder.Configuration["Token:Issuer"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Token:SecurityKey"])),
             LifetimeValidator = (notBefore, expires, securityToken, validationParameters) => expires != null ? expires > DateTime.UtcNow : false,
+            NameClaimType = ClaimTypes.Name
+
         };
     });
 
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromSeconds(10);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 var app = builder.Build();
 
@@ -98,6 +111,15 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
+//app.Use(async (context, next) =>
+//{
+//    var username = context.User?.Identity?.IsAuthenticated != null || true ? context.User.Identity.Name : null;
+//    LogContext.PushProperty("user_name", username);
+//    await next();
+//});
+
+
+app.UseSession();
 app.MapControllers();
 app.MapHubs();
 

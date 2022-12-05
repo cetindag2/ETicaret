@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Identity;
 using ETicaretAPI.Application.Abstractions.Services;
 using ETicaretAPI.Persistence.Services;
 using ETicaretAPI.Application.Abstractions.Services.Authentications;
+using Microsoft.AspNetCore.Server.IISIntegration;
+using Microsoft.AspNetCore.Http;
 
 namespace ETicaretAPI.Persistence
 {
@@ -57,6 +59,12 @@ namespace ETicaretAPI.Persistence
             services.AddScoped<IExternalAuthentication, AuthService>();
             services.AddScoped<IInternalAuthentication, AuthService>();
             services.AddScoped<IBasketService, BasketService>();
+
+            //services.AddAuthentication(IISDefaults.AuthenticationScheme);
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddDistributedMemoryCache();
+            //services.AddSession();
+            //services.AddMvc();
 
         }
     }

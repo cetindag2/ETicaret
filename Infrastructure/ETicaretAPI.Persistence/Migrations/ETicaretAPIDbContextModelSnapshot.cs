@@ -72,7 +72,7 @@ namespace ETicaretAPI.Persistence.Migrations
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("BaketItems");
+                    b.ToTable("BasketItems");
                 });
 
             modelBuilder.Entity("ETicaretAPI.Domain.Entities.Customer", b =>

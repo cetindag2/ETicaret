@@ -9,8 +9,10 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Session;
 
 namespace ETicaretAPI.Persistence.Services
 {
@@ -23,7 +25,15 @@ namespace ETicaretAPI.Persistence.Services
         readonly IBasketReadRepository _basketReadRepository;
         readonly IBasketItemWriteRepository _basketItemWriteRepository;
         readonly IBasketItemReadRepository _basketItemReadRepository;
-        public BasketService(IHttpContextAccessor httpContextAccessor, UserManager<AppUser> userManager, IOrderReadRepository orderReadRepository, IBasketWriteRepository basketWriteRepository, IBasketItemWriteRepository basketItemWriteRepository, IBasketItemReadRepository basketItemReadRepository, IBasketReadRepository basketReadRepository)
+        public ISession _session => _httpContextAccessor.HttpContext.Session;
+        public BasketService(IHttpContextAccessor httpContextAccessor, 
+            UserManager<AppUser> userManager, 
+            IOrderReadRepository orderReadRepository, 
+            IBasketWriteRepository basketWriteRepository, 
+            IBasketItemWriteRepository basketItemWriteRepository, 
+            IBasketItemReadRepository basketItemReadRepository, 
+            IBasketReadRepository basketReadRepository
+            )
         {
             _httpContextAccessor = httpContextAccessor;
             _userManager = userManager;
@@ -33,10 +43,21 @@ namespace ETicaretAPI.Persistence.Services
             _basketItemReadRepository = basketItemReadRepository;
             _basketReadRepository = basketReadRepository;
         }
-
-        private async Task<Basket?> ContextUser()
+        
+       
+        public async Task<Basket?> ContextUser()
         {
-            var username = _httpContextAccessor?.HttpContext?.User?.Identity?.Name;
+            //var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+            //Domain.Entities.Identity.AppUser user1 = await _userManager.FindByNameAsync(userId);
+            //var username1 = user1.UserName;
+            var username = "cdag";
+            //var username = _httpContextAccessor?.HttpContext?.User?.Identity?.Name;
+            //var username2 = _session.GetString("session");
+            //var userId2 = _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //var username4 = _session.GetString("login");
+            //var username5 = HttpContext.Session.GetString("Test");
+
+
             if (!string.IsNullOrEmpty(username))
             {
                 AppUser? user = await _userManager.Users
@@ -59,7 +80,7 @@ namespace ETicaretAPI.Persistence.Services
                 else
                 {
                     targetBasket = new();
-                    user.Baskets.Add(targetBasket);
+                    user.Baskets.Add(new());
                 }
 
                 await _basketWriteRepository.SaveAsync();

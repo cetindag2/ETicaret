@@ -1,12 +1,11 @@
-﻿
-using System;
+﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace ETicaretAPI.Persistence.Migrations
 {
-    public partial class mig2 : Migration
+    public partial class mig_2 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -16,29 +15,22 @@ namespace ETicaretAPI.Persistence.Migrations
                 {
                     ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    OrderID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Baskets", x => x.ID);
-                    //table.ForeignKey(
-                    //    name: "FK_Baskets_AspNetUsers_UserId",
-                    //    column: x => x.UserId,
-                    //    principalTable: "AspNetUsers",
-                    //    principalColumn: "Id",
-                    //    onDelete: ReferentialAction.Cascade);
-                    //table.ForeignKey(
-                    //    name: "FK_Baskets_Orders_OrderID",
-                    //    column: x => x.OrderID,
-                    //    principalTable: "Orders",
-                    //    principalColumn: "ID",
-                    //    onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Baskets_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "BaketItems",
+                name: "BasketItems",
                 columns: table => new
                 {
                     ID = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -50,46 +42,53 @@ namespace ETicaretAPI.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_BaketItems", x => x.ID);
-                    //table.ForeignKey(
-                    //    name: "FK_BaketItems_Baskets_BasketId",
-                    //    column: x => x.BasketId,
-                    //    principalTable: "Baskets",
-                    //    principalColumn: "ID",
-                    //    onDelete: ReferentialAction.Cascade);
-                    //table.ForeignKey(
-                    //    name: "FK_BaketItems_Products_ProductId",
-                    //    column: x => x.ProductId,
-                    //    principalTable: "Products",
-                    //    principalColumn: "ID",
-                    //    onDelete: ReferentialAction.Cascade);
+                    table.PrimaryKey("PK_BasketItems", x => x.ID);
+                    table.ForeignKey(
+                        name: "FK_BasketItems_Baskets_BasketId",
+                        column: x => x.BasketId,
+                        principalTable: "Baskets",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BasketItems_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_BaketItems_BasketId",
-                table: "BaketItems",
+                name: "IX_BasketItems_BasketId",
+                table: "BasketItems",
                 column: "BasketId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_BaketItems_ProductId",
-                table: "BaketItems",
+                name: "IX_BasketItems_ProductId",
+                table: "BasketItems",
                 column: "ProductId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Baskets_OrderID",
-                table: "Baskets",
-                column: "OrderID");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Baskets_UserId",
                 table: "Baskets",
                 column: "UserId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_Orders_Baskets_ID",
+                table: "Orders",
+                column: "ID",
+                principalTable: "Baskets",
+                principalColumn: "ID",
+                onDelete: ReferentialAction.Cascade);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Orders_Baskets_ID",
+                table: "Orders");
+
             migrationBuilder.DropTable(
-                name: "BaketItems");
+                name: "BasketItems");
 
             migrationBuilder.DropTable(
                 name: "Baskets");
